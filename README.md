@@ -1,5 +1,6 @@
 # Quizemic
 
+![Index page of Quizemic](images/quizemic-homepage.png)
 ## Overview
 Quizemic is an interactive and engaging quiz platform designed to streamline educational and recruitment processes. It allows users to test their knowledge in various subjects while providing educators and recruiters with a robust platform for evaluating and tracking performance.
 
