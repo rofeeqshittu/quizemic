@@ -1,0 +1,8 @@
+Django==4.2
+djangorestframework==3.14.0
+Pillow==10.0.1
+django-filter==23.2
+django-crispy-forms==1.14.0
+crispy-bootstrap5==0.7
+psycopg2-binary==2.9.8   # For PostgreSQL (To be used later, Not applicable now)
+whitenoise==6.5.0       # For serving static files
