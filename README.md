@@ -37,7 +37,7 @@ Quizemic is an interactive and engaging quiz platform designed to streamline edu
 ### Steps to Run Locally
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/<your-username>/quizemic.git
+   git clone https://github.com/rofeeqshittu/quizemic.git
    cd quizemic
    ```
 
