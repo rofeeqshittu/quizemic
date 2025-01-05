@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+{% load quiz_filters %}  {# Add this line #}
+
+{% block title %}{{ quiz.title }} - Quizemic{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/quiz.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <form id="question-form" method="POST">
+        {% csrf_token %}
+        <input type="hidden" id="initial-time" value="{{ time_remaining }}">
+        <input type="hidden" id="quiz-id" value="{{ quiz.id }}">
+        <input type="hidden" id="warning-threshold" value="{{ quiz.time_limit|multiply:60|multiply:0.1|floatformat:0 }}">
+
+        <div class="quiz-header">
+            <div>
+                <h1 class="quiz-title">{{ quiz.title }}</h1>
+                <p class="quiz-progress">Question {{ current_question_number }} of {{ total_questions }}</p>
+            </div>
+            <div class="timer">
+                <i class="fas fa-clock"></i>
+                <span id="timer-display">Loading...</span>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <h2 class="question">{{ question.text }}</h2>
+            {% if question.description %}
+                <p class="question-description">{{ question.description }}</p>
+            {% endif %}
+            
+            <div class="options" id="options">
+                {% for answer in answers %}
+                <button type="button" class="option-btn" data-answer-id="{{ answer.id }}">
+                    <span class="option-letter">{{ forloop.counter|stringformat:"c"|upper }}.</span>
+                    {{ answer.text }}
+                </button>
+                {% endfor %}
+                <input type="hidden" name="answer" id="selected-answer">
+            </div>
+        </div>
+
+        <div class="feedback" id="feedback" style="display: none;"></div>
+
+        <div class="quiz-navigation">
+            <button type="button" class="btn btn-outline" 
+                    {% if is_first_question %}disabled{% endif %}
+                    onclick="window.location.href='{% url 'quiz_question' quiz.id %}?question={{ current_question_number|add:-1 %}'">
+                Previous
+            </button>
+            <button type="submit" class="btn btn-primary" id="next-btn" disabled>
+                {% if is_last_question %}Finish Quiz{% else %}Next Question{% endif %}
+            </button>
+        </div>
+
+        <div class="quiz-progress-bar">
+            <div class="progress" style="width: {{ progress_percentage }}%"></div>
+        </div>
+
+        <button type="button" class="report-btn">
+            <i class="fas fa-flag"></i>
+            Report Question
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/quiz-timer.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize timer
+    const quizTimer = new QuizTimer({
+        initialTime: parseInt(document.getElementById('initial-time').value),
+        quizId: parseInt(document.getElementById('quiz-id').value),
+        displayId: 'timer-display',
+        warningThreshold: parseInt(document.getElementById('warning-threshold').value),
+        onTimeUp: () => {
+            // Disable all option buttons
+            document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+            
+            // Show time's up message
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = "Time's up!";
+            feedback.className = 'feedback error';
+            feedback.style.display = 'block';
+            
+            // Submit form
+            document.getElementById('question-form').submit();
+        }
+    });
+
+    // Start timer
+    quizTimer.start();
+
+    // Handle option selection
+    const optionsContainer = document.getElementById('options');
+    const nextButton = document.getElementById('next-btn');
+    const selectedAnswerInput = document.getElementById('selected-answer');
+
+    optionsContainer.addEventListener('click', (e) => {
+        const button = e.target.closest('.option-btn');
+        if (button) {
+            // Remove selection from other buttons
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection to clicked button
+            button.classList.add('selected');
+            
+            // Enable next button and set selected answer
+            nextButton.disabled = false;
+            selectedAnswerInput.value = button.dataset.answerId;
+        }
+    });
+
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            quizTimer.stop();
+        } else {
+            quizTimer.start();
+        }
+    });
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        quizTimer.stop();
+    });
+});
+</script>
+{% endblock %}

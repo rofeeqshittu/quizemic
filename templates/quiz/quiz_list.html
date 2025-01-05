@@ -1,0 +1,118 @@
+{# templates/quiz/quiz_list.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Available Quizzes - Quizemic{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <!-- Category Filter Sidebar -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'quiz_list' %}" 
+                           class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
+                            All Quizzes
+                        </a>
+                        {% for category in categories %}
+                        <a href="{% url 'quiz_list' %}?category={{ category.id }}" 
+                           class="list-group-item list-group-item-action {% if selected_category == category.id|stringformat:'s' %}active{% endif %}">
+                            <i class="fas {{ category.icon }}"></i> {{ category.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz List -->
+        <div class="col-lg-9">
+            <div class="row">
+                {% for quiz in quizzes %}
+                <div class="col-md-6 mb-4">
+                    <div class="card quiz-card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ quiz.title }}</h5>
+                            <p class="card-text">{{ quiz.description|truncatewords:20 }}</p>
+                            <div class="quiz-meta">
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-clock"></i> {{ quiz.time_limit }} mins
+                                </span>
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-question-circle"></i> 
+                                    {{ quiz.questions.count }} questions
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="{% url 'take_quiz' quiz.id %}" class="btn btn-primary w-100">
+                                Start Quiz
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No quizzes available in this category yet.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.quiz-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quiz-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.quiz-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.quiz-meta .badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+.list-group-item {
+    border: none;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.list-group-item i {
+    margin-right: 0.5rem;
+    width: 20px;
+    text-align: center;
+}
+
+.list-group-item:hover:not(.active) {
+    background-color: var(--light);
+    color: var(--primary);
+}
+
+.list-group-item.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quizemic - Interactive Quiz Platform{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/home.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero d-flex align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content">
+                <h1 class="display-4 fw-bold mb-4">Test Your Knowledge.<br>
+                    <span class="text-primary">Learn While You Play!</span>
+                </h1>
+                <p class="lead mb-4">Join millions of learners worldwide in making education fun and engaging through interactive quizzes.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'quiz_list' %}" class="btn btn-primary btn-lg me-3">Start Quiz</a>
+                {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-3">Get Started</a>
+                {% endif %}
+                <button class="btn btn-outline-primary btn-lg">Learn More</button>
+            </div>
+            <div class="col-lg-6">
+                <img src="{% static 'images/quiz-hero-illustration.svg' %}" alt="Interactive Quiz Platform" class="img-fluid hero-image">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Why Choose Quizemic?</h2>
+            <p class="lead text-muted">Experience the future of interactive learning</p>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Interactive Learning</h3>
+                    <p>Engage with dynamic content that adapts to your learning style and pace.</p>
+                </div>
+            </div>
+            <!-- Other feature cards... -->
+	    <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Track Progress</h3>
+                        <p>Monitor your improvement with detailed analytics and performance insights.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3>Compete Globally</h3>
+                        <p>Challenge players worldwide and climb the global leaderboard rankings.</p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <!-- Stats content... -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number" data-target="1000000">1M+</div>
+                        <p>Active Users</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number" data-target="5000">5000+</div>
+                        <p>Quiz Questions</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number" data-target="50">50+</div>
+                        <p>Categories</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number" data-target="98">98%</div>
+                        <p>Satisfaction Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5">
+    <!-- Testimonials content... -->
+    <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">What Our Users Say</h2>
+                <p class="lead text-muted">Join our community of happy learners</p>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <i class="fas fa-quote-right quote-icon"></i>
+                        <img src="/api/placeholder/80/80" alt="User" class="testimonial-avatar">
+                        <p class="mb-3">"Quizemic has transformed how I study. The interactive quizzes make learning fun!"</p>
+                        <h5 class="mb-1">Sarah Johnson</h5>
+                        <p class="text-muted">Student</p>
+                    </div>
+                </div>
+                <!-- More testimonials... -->
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <i class="fas fa-quote-right quote-icon"></i>
+                        <img src="/api/placeholder/80/80" alt="User" class="testimonial-avatar">
+                        <p class="mb-3">"The best quiz platform I've used - great experience... My students love it!"</p>
+                        <h5 class="mb-1">Mark Chen</h5>
+                        <p class="text-muted">Teacher</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <i class="fas fa-quote-right quote-icon"></i>
+                        <img src="/api/placeholder/80/80" alt="User" class="testimonial-avatar">
+                        <p class="mb-3">"Quizemic has transformed how we assess and track, helping us identify top candidates quickly and efficiently."</p>
+                        <h5 class="mb-1">Michael Torres</h5>
+                        <p class="text-muted">HR Admin, Elevate Enterprises</p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}

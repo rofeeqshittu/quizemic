@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - Quizemic{% endblock %}
+
+{% block extra_css %}
+<style>
+    main {
+        min-height: 100vh;
+        padding-top: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-container {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 20px;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 32px;
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #111827;
+        margin-top: 4px;
+    }
+
+    .input-field:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
+    }
+
+    .submit-button {
+        width: 100%;
+        background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .submit-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(13,148,136,0.2);
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-gray-900">Welcome back!</h1>
+            <p class="text-gray-600 mt-2">Log in to continue your learning journey</p>
+        </div>
+        <form method="post" class="mt-8 space-y-6">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p class="text-danger">{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="id_username" required
+                    class="input-field"
+                    placeholder="Enter your username">
+            </div>
+            <div>
+                <label for="id_password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password" id="id_password" required
+                    class="input-field"
+                    placeholder="Enter your password">
+            </div>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input type="checkbox" name="remember" id="remember"
+                        class="h-4 w-4 rounded border-gray-300">
+                    <label for="remember" class="ml-2 text-sm text-gray-600">
+                        Remember me
+                    </label>
+                </div>
+                <a href="{% url 'password_reset' %}" class="text-sm text-primary hover:underline">
+                    Forgot password?
+                </a>
+            </div>
+            <button type="submit" class="submit-button">
+                Log In
+            </button>
+        </form>
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">
+                Don't have an account?
+                <a href="{% url 'register' %}" class="text-primary hover:underline">
+                    Sign up
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

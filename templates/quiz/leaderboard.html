@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quizemic - Leaderboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --teal-50: #f0fdfa;
+        --teal-500: #14b8a6;
+        --teal-600: #0d9488;
+        --teal-700: #0f766e;
+    }
+
+    body {
+        background: linear-gradient(180deg, var(--teal-50) 0%, #f8fafc 100%);
+    }
+
+    .trophy-icon {
+        color: var(--teal-500);
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .gradient-text {
+        background: linear-gradient(90deg, var(--teal-600) 0%, var(--teal-500) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .search-container {
+        position: relative;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+    }
+
+    .search-input {
+        padding-left: 2.5rem;
+    }
+
+    .leaderboard-item {
+        background: #f9fafb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+    }
+
+    .leaderboard-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .top-3 {
+        background: linear-gradient(90deg, var(--teal-50) 0%, #f9fafb 100%);
+    }
+
+    .current-user {
+        border: 2px solid var(--teal-500);
+    }
+
+    .rank-1 { color: #fbbf24; }
+    .rank-2 { color: #9ca3af; }
+    .rank-3 { color: #b45309; }
+
+    .achievement-badge {
+        background: #ccfbf1;
+        color: var(--teal-700);
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        margin-right: 0.5rem;
+    }
+
+    .user-score {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--teal-700);
+    }
+
+    .rank-change-up { color: #22c55e; }
+    .rank-change-down { color: #ef4444; }
+
+    .nav-tabs .nav-link {
+        border: none;
+        padding: 0.75rem 1.5rem;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: var(--teal-600);
+        border-bottom: 2px solid var(--teal-600);
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        height: 100%;
+        transition: transform 0.2s;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .category-section {
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card">
+        <div class="card-header text-center border-0 bg-white pt-4">
+            <i class="fas fa-trophy trophy-icon"></i>
+            <h1 class="gradient-text mb-4">Quiz Masters Leaderboard</h1>
+
+            <!-- Filters Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+		    <!-- Update the timeframe select options to match our view logic -->
+		    <select class="form-select" id="timeframeSelect" name="timeframe">
+			<option value="all-time" {% if selected_timeframe == 'all-time' %}selected{% endif %}>All Time</option>
+			<option value="year" {% if selected_timeframe == 'year' %}selected{% endif %}>This Year</option>
+			<option value="month" {% if selected_timeframe == 'month' %}selected{% endif %}>This Month</option>
+			<option value="week" {% if selected_timeframe == 'week' %}selected{% endif %}>This Week</option>
+		    </select>
+                </div>
+                
+		<div class="col-md-3">
+		    <!-- Update category select to use selected_category -->
+		    <select class="form-select" id="categorySelect" name="category">
+	   		<option value="all" {% if selected_category == 'all' %}selected{% endif %}>All Categories</option>
+ 			{% for category in categories %}
+     			   <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+           		   	{{ category.name }}
+       			   </option>
+  			{% endfor %}
+		     </select>
+
+
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="sortSelect">
+			<option value="score" {% if selected_sort == 'score' %}selected{% endif %}>Total Score</option>
+			<option value="accuracy" {% if selected_sort == 'accuracy' %}selected{% endif %}>Accuracy</option>
+			<option value="games" {% if selected_sort == 'games' %}selected{% endif %}>Games Played</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+			<!-- Update search input to maintain state -->
+			<input type="text" class="form-control search-input" id="searchInput"
+			       name="search" placeholder="Search players..."
+			       value="{{ search_query }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs justify-content-center" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overall">
+                        <i class="fas fa-trophy"></i> Overall Rankings
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recent">
+                        <i class="fas fa-clock"></i> Recent Achievements
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#categories">
+                        <i class="fas fa-list"></i> Category Leaders
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Overall Rankings Tab -->
+                <div class="tab-pane fade show active" id="overall">
+                    {% for user in top_users %}
+                        <div class="leaderboard-item {% if user.rank <= 3 %}top-3{% endif %} {% if user == request.user %}current-user{% endif %}">
+                            <div class="d-flex align-items-center flex-wrap">
+                                <div class="d-flex align-items-center me-3">
+                                    {% if user.rank == 1 %}
+                                        <i class="fas fa-crown rank-1"></i>
+                                    {% elif user.rank == 2 %}
+                                        <i class="fas fa-medal rank-2"></i>
+                                    {% elif user.rank == 3 %}
+                                        <i class="fas fa-medal rank-3"></i>
+                                    {% else %}
+                                        <span class="fw-bold">{{ forloop.counter }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <img src="{{ user.profile_picture.url }}" alt="" class="rounded-circle me-3" style="width: 48px; height: 48px;">
+                                
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="fw-medium me-2">{{ user.username }}</span>
+                                        {% if user == request.user %}
+                                            <span class="badge bg-teal-100 text-teal-700">(You)</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-muted small">
+                                        Games: {{ user.quizzes_taken }} | Avg: {{ user.avg_score|floatformat:1 }}%
+                                    </div>
+                                </div>
+                                
+                                <div class="text-end">
+                                    <div class="user-score">{{ user.total_points }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Recent Achievements Tab -->
+                <div class="tab-pane fade" id="recent">
+                    {% for result in recent_high_scores %}
+                        <div class="leaderboard-item">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ result.user.profile_picture.url }}" alt="" class="rounded-circle me-3" style="width: 48px; height: 48px;">
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-0">{{ result.user.username }}</h5>
+                                    <small class="text-muted">{{ result.quiz.title }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="user-score">{{ result.score }}%</div>
+                                    <small class="text-muted">{{ result.completed_at|timesince }} ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Category Leaders Tab -->
+                <div class="tab-pane fade" id="categories">
+                    <div class="row">
+                        {% for category, leaders in category_leaders.items %}
+                            <div class="col-md-6 mb-4">
+                                <div class="stats-card">
+                                    <h3 class="mb-4">
+                                        <i class="fas {{ category.icon }}"></i>
+                                        {{ category.name }}
+                                    </h3>
+                                    {% for result in leaders %}
+                                        <div class="leaderboard-item mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rank-badge me-3">{{ forloop.counter }}</div>
+                                                <img src="{{ result.user.profile_picture.url }}" alt="" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-0">{{ result.user.username }}</h6>
+                                                    <small class="text-muted">{{ result.quiz.title }}</small>
+                                                </div>
+                                                <div class="user-score">{{ result.score }}%</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const timeframeSelect = document.getElementById('timeframeSelect');
+    const categorySelect = document.getElementById('categorySelect');
+    const sortSelect = document.getElementById('sortSelect');
+    const leaderboardContent = document.getElementById('overall');
+    
+    // Loading indicator
+    function showLoading() {
+        leaderboardContent.style.opacity = '0.5';
+    }
+    
+    function hideLoading() {
+        leaderboardContent.style.opacity = '1';
+    }
+
+    // Debounce function to prevent too many requests
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    async function updateLeaderboard() {
+        const searchQuery = searchInput.value;
+        const timeframe = timeframeSelect.value;
+        const category = categorySelect.value;
+        const sortBy = sortSelect.value;
+
+        // Create URL parameters
+        const searchParams = new URLSearchParams({
+            search: searchQuery,
+            timeframe: timeframe,
+            category: category,
+            sort: sortBy
+        });
+
+        // Update URL without refresh
+        window.history.pushState(
+            {}, 
+            '', 
+            `${window.location.pathname}?${searchParams.toString()}`
+        );
+
+        try {
+            showLoading();
+            // Make AJAX request to update leaderboard
+            const response = await fetch(`/api/leaderboard/?${searchParams.toString()}`);
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            
+            // Update the leaderboard content
+            if (data.html) {
+                leaderboardContent.innerHTML = data.html;
+            } else {
+                // Fallback to full page reload if no HTML is returned
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Error updating leaderboard:', error);
+            // Fallback to full page reload on error
+            window.location.reload();
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Add event listeners with debounce for search
+    searchInput.addEventListener('input', debounce(updateLeaderboard, 500));
+    timeframeSelect.addEventListener('change', updateLeaderboard);
+    categorySelect.addEventListener('change', updateLeaderboard);
+    sortSelect.addEventListener('change', updateLeaderboard);
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', function() {
+        // Reload the page to show the correct state
+        window.location.reload();
+    });
+});
+</script>
+{% endblock %}
