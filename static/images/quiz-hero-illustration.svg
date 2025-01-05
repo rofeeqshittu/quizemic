@@ -1,0 +1,94 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Elements -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4299E1;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#0D9488;stop-opacity:0.1"/>
+    </linearGradient>
+  </defs>
+  
+  <circle cx="400" cy="300" r="250" fill="url(#bgGradient)"/>
+  <circle cx="150" cy="150" r="20" fill="#4299E1" opacity="0.2"/>
+  <circle cx="650" cy="450" r="15" fill="#FF8A4C" opacity="0.2"/>
+  
+  <!-- Decorative Background Patterns -->
+  <path d="M50,100 Q75,125 50,150" stroke="#4299E1" fill="none" stroke-width="2" opacity="0.3"/>
+  <path d="M700,400 Q725,425 700,450" stroke="#0D9488" fill="none" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Main Device Frame with Blue Gradient -->
+  <rect x="250" y="100" width="300" height="400" rx="20" fill="#ffffff"/>
+  <rect x="250" y="100" width="300" height="400" rx="20" fill="none" stroke="url(#deviceBorder)" stroke-width="3"/>
+  
+  <defs>
+    <linearGradient id="deviceBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4299E1"/>
+      <stop offset="100%" style="stop-color:#0D9488"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Screen Content -->
+  <rect x="270" y="120" width="260" height="360" rx="10" fill="#F7FAFC"/>
+  
+  <!-- Quiz Elements -->
+  <!-- Progress Bar -->
+  <rect x="290" y="140" width="220" height="10" rx="5" fill="#E2E8F0"/>
+  <rect x="290" y="140" width="110" height="10" rx="5" fill="#4299E1"/>
+  
+  <!-- Question Box with Gradient -->
+  <defs>
+    <linearGradient id="questionGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0D9488"/>
+      <stop offset="100%" style="stop-color:#4299E1"/>
+    </linearGradient>
+  </defs>
+  <rect x="290" y="160" width="220" height="80" rx="8" fill="url(#questionGradient)"/>
+  <text x="300" y="185" fill="white" font-family="Arial" font-size="14" font-weight="bold">Question 3 of 10</text>
+  <text x="300" y="210" fill="white" font-family="Arial" font-size="12">What is the capital of France?</text>
+  
+  <!-- Answer Options with Enhanced Styling -->
+  <rect x="290" y="260" width="220" height="40" rx="8" fill="white" stroke="#4299E1" stroke-width="2"/>
+  <text x="310" y="285" fill="#2D3748" font-family="Arial" font-size="14">A) London</text>
+  
+  <rect x="290" y="310" width="220" height="40" rx="8" fill="#4299E1"/>
+  <text x="310" y="335" fill="white" font-family="Arial" font-size="14">B) Paris</text>
+  
+  <rect x="290" y="360" width="220" height="40" rx="8" fill="white" stroke="#0D9488" stroke-width="2"/>
+  <text x="310" y="385" fill="#2D3748" font-family="Arial" font-size="14">C) Berlin</text>
+  
+  <rect x="290" y="410" width="220" height="40" rx="8" fill="white" stroke="#4299E1" stroke-width="2"/>
+  <text x="310" y="435" fill="#2D3748" font-family="Arial" font-size="14">D) Madrid</text>
+  
+  <!-- Floating Elements -->
+  <!-- Books with Blue Accents -->
+  <rect x="180" y="250" width="50" height="60" rx="5" fill="#4299E1" transform="rotate(-15)"/>
+  <rect x="170" y="245" width="50" height="60" rx="5" fill="#0D9488" transform="rotate(-10)"/>
+  <rect x="160" y="240" width="50" height="60" rx="5" fill="#FF8A4C" transform="rotate(-5)"/>
+  
+  <!-- Question Marks with Blue -->
+  <text x="600" y="200" fill="#4299E1" font-size="40" font-weight="bold" transform="rotate(15)">?</text>
+  <text x="630" y="250" fill="#0D9488" font-size="30" font-weight="bold" transform="rotate(-10)">?</text>
+  <text x="180" y="400" fill="#FF8A4C" font-size="35" font-weight="bold" transform="rotate(5)">?</text>
+  
+  <!-- Achievement Stars with Gradients -->
+  <defs>
+    <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700"/>
+      <stop offset="100%" style="stop-color:#4299E1"/>
+    </linearGradient>
+  </defs>
+  <path d="M720 300 L733 320 L756 325 L738 340 L742 364 L720 353 L698 364 L702 340 L684 325 L707 320 Z" fill="url(#starGradient)"/>
+  <path d="M150 320 L163 340 L186 345 L168 360 L172 384 L150 373 L128 384 L132 360 L114 345 L137 340 Z" fill="#FFD700" opacity="0.5"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="600" cy="150" r="8" fill="#4299E1" opacity="0.3"/>
+  <circle cx="620" cy="160" r="5" fill="#0D9488" opacity="0.3"/>
+  <circle cx="580" cy="170" r="6" fill="#FF8A4C" opacity="0.3"/>
+  
+  <!-- Connecting Lines -->
+  <path d="M50,150 Q125,175 200,150" stroke="#4299E1" stroke-width="2" fill="none" opacity="0.3"/>
+  <path d="M600,450 Q675,475 750,450" stroke="#0D9488" stroke-width="2" fill="none" opacity="0.3"/>
+  
+  <!-- Abstract Shapes -->
+  <circle cx="100" cy="500" r="30" fill="none" stroke="#4299E1" stroke-width="2" opacity="0.2"/>
+  <rect x="650" cy="100" width="40" height="40" rx="10" fill="none" stroke="#4299E1" stroke-width="2" opacity="0.2" transform="rotate(45)"/>
+</svg>

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ quiz.title }} - Take Quiz{% endblock %}
+
+{% block extra_css %}
+<style>
+    .quiz-container {
+        max-width: 800px;
+        margin: 100px auto 40px;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .quiz-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .quiz-title {
+        color: var(--primary);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .quiz-description {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .quiz-meta {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        font-size: 0.9rem;
+        color: #777;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .start-button {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: 2rem auto;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        text-align: center;
+        background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .start-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(13,148,136,0.2);
+    }
+
+    .quiz-rules {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-top: 2rem;
+    }
+
+    .rules-title {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .rules-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .rules-list li {
+        margin-bottom: 0.8rem;
+        padding-left: 1.5rem;
+        position: relative;
+    }
+
+    .rules-list li::before {
+        content: "•";
+        color: var(--primary);
+        position: absolute;
+        left: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h1 class="quiz-title">{{ quiz.title }}</h1>
+        <p class="quiz-description">{{ quiz.description }}</p>
+        <div class="quiz-meta">
+            <div class="meta-item">
+                <i class="fas fa-clock"></i>
+                <span>{{ quiz.time_limit }} minutes</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-list-ol"></i>
+                <span>{{ quiz.questions.count }} questions</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-folder"></i>
+                <span>{{ quiz.category.name }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-rules">
+        <h3 class="rules-title">Quiz Rules</h3>
+        <ul class="rules-list">
+            <li>You have {{ quiz.time_limit }} minutes to complete this quiz</li>
+            <li>Each question has only one correct answer</li>
+            <li>You cannot return to previous questions</li>
+            <li>The quiz will auto-submit when the time expires</li>
+            <li>Your score will be calculated based on correct answers only</li>
+        </ul>
+    </div>
+
+    <a href="{% url 'start_quiz' quiz.id %}" class="start-button">
+        Start Quiz
+    </a>
+</div>
+{% endblock %}

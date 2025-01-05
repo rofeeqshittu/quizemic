@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load quiz_extras %}  <!-- Add this line to load our custom filters -->
+
+{% block title %}Quiz Results - {{ result.quiz.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .score-card {
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .trophy-icon {
+        width: 4rem;
+        height: 4rem;
+        color: var(--accent);
+        margin: 0 auto 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    .score-display {
+        position: relative;
+        font-size: 4rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .question-item {
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        overflow: hidden;
+    }
+
+    .question-item.correct {
+        background: #f0fdf4;
+    }
+
+    .question-item.incorrect {
+        background: #fef2f2;
+    }
+
+    .answer-details {
+        height: 0;
+        overflow: hidden;
+        transition: height 0.3s ease;
+    }
+
+    .answer-details-inner {
+        padding: 1rem;
+        margin: 0 1rem 1rem;
+        background: white;
+        border-radius: 0.375rem;
+    }
+
+    .btn-share {
+        background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-share:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(13,148,136,0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <!-- Score Card -->
+    <div class="card score-card text-center p-4">
+        <svg class="trophy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 15C8.67 15 6 12.33 6 9V4h12v5c0 3.33-2.67 6-6 6z"/>
+            <path d="M6 4H4v5a8 8 0 0 0 4 6.92"/>
+            <path d="M18 4h2v5a8 8 0 0 1-4 6.92"/>
+            <path d="M12 15v4"/>
+            <path d="M8 19h8"/>
+        </svg>
+        
+        <div class="score-display">
+            <span id="score">{{ result.score }}</span>%
+        </div>
+        
+        <p class="h3 mb-3" id="performance-text">
+            {% if result.score >= 80 %}
+                Excellent!
+            {% elif result.score >= 60 %}
+                Good Job!
+            {% else %}
+                Keep Practicing!
+            {% endif %}
+        </p>
+        
+        <p class="text-muted mb-4">
+            Completed in {{ result.time_taken|integer_divide:60 }} minutes
+            {{ result.time_taken|modulo:60 }} seconds
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 mb-4">
+            <button class="btn btn-share" onclick="handleShare()">
+                <i class="fas fa-share-alt me-2"></i>
+                Share Result
+            </button>
+            <a href="{% url 'take_quiz' result.quiz.id %}" class="btn btn-outline-primary">
+                <i class="fas fa-redo me-2"></i>
+                Try Again
+            </a>
+        </div>
+    </div>
+
+    <!-- Questions Summary -->
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Question Summary</h2>
+            <div id="questions-container">
+                {% for question in result.quiz.questions.all %}
+                    <div class="question-item {% if question.id in correct_questions %}correct{% else %}incorrect{% endif %}"
+                         onclick="toggleQuestion(this)">
+                        <div class="p-3 d-flex align-items-start gap-3">
+                            <i class="fas fa-{% if question.id in correct_questions %}check text-success{% else %}times text-danger{% endif %} mt-1"></i>
+                            <div class="flex-grow-1">
+                                <p class="mb-1 fw-bold">Question {{ forloop.counter }}</p>
+                                <p class="mb-0 text-muted">{{ question.text }}</p>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="answer-details">
+                            <div class="answer-details-inner">
+                                {% if question.id in correct_questions %}
+                                    <div class="mb-2">
+                                        <span class="fw-bold">Your answer:</span>
+                                        <span class="text-success">
+                                            {{ questions_data|get_item:question.id|get_item:'user_answer'|default:"Not answered" }}
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <div class="mb-2">
+                                        <span class="fw-bold">Your answer:</span>
+                                        <span class="text-danger">
+                                            {{ questions_data|get_item:question.id|get_item:'user_answer'|default:"Not answered" }}
+                                        </span>
+                                        <br>
+                                        <span class="fw-bold">Correct answer:</span>
+                                        <span class="text-success">
+                                            {{ questions_data|get_item:question.id|get_item:'correct_answer' }}
+                                        </span>
+                                    </div>
+                                {% endif %}
+                                {% if question.description %}
+                                    <p class="text-muted mt-2 mb-0 fst-italic">{{ question.description }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize animations
+    document.addEventListener('DOMContentLoaded', function() {
+        animateScore();
+        setupQuestionToggles();
+    });
+
+    // Animate score counter
+    function animateScore() {
+        const scoreElement = document.getElementById('score');
+        const targetScore = parseInt(scoreElement.textContent);
+        const duration = 2000;
+        const steps = 60;
+        const increment = targetScore / steps;
+        let current = 0;
+
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= targetScore) {
+                scoreElement.textContent = targetScore;
+                clearInterval(timer);
+            } else {
+                scoreElement.textContent = Math.floor(current);
+            }
+        }, duration / steps);
+    }
+
+    // Toggle question details
+    function toggleQuestion(element) {
+        const details = element.querySelector('.answer-details');
+        const detailsInner = element.querySelector('.answer-details-inner');
+        const chevron = element.querySelector('.fa-chevron-down');
+        
+        element.classList.toggle('expanded');
+        if (element.classList.contains('expanded')) {
+            details.style.height = detailsInner.offsetHeight + 'px';
+            chevron.style.transform = 'rotate(180deg)';
+        } else {
+            details.style.height = '0';
+            chevron.style.transform = 'rotate(0)';
+        }
+    }
+
+    // Share results
+    function handleShare() {
+        const shareData = {
+            title: 'My Quiz Results',
+            text: `I scored ${document.getElementById('score').textContent}% on {{ result.quiz.title }}!`,
+            url: window.location.href
+        };
+
+        if (navigator.share) {
+            navigator.share(shareData)
+                .catch(error => console.log('Error sharing:', error));
+        } else {
+            // Fallback for browsers that don't support sharing
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = `I scored ${document.getElementById('score').textContent}% on {{ result.quiz.title }}! ${window.location.href}`;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            alert('Results link copied to clipboard!');
+        }
+    }
+</script>
+{% endblock %}

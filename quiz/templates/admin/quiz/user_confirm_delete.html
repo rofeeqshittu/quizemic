@@ -1,0 +1,53 @@
+{% extends "admin/quiz/base.html" %}
+
+{% block title %}Delete User - Quizemic Admin{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'quiz_admin:user_list' %}">Users</a></li>
+<li class="breadcrumb-item active">Delete User</li>
+{% endblock %}
+
+{% block page_title %}Delete User: {{ object.username }}{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="alert alert-danger">
+                <h4 class="alert-heading mb-3">Are you sure you want to delete this user?</h4>
+                <p>This action cannot be undone. All data associated with this user will be permanently deleted, including:</p>
+                <ul>
+                    <li>Quiz results and progress</li>
+                    <li>Achievements</li>
+                    <li>Profile information</li>
+                </ul>
+            </div>
+            
+            <div class="user-info mb-4">
+                <h5>User Details:</h5>
+                <div class="d-flex align-items-center mb-2">
+                    {% if object.profile.image %}
+                        <img src="{{ object.profile.image.url }}" alt="Profile" 
+                             class="rounded-circle me-2" style="width: 48px; height: 48px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
+                             style="width: 48px; height: 48px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <div><strong>Username:</strong> {{ object.username }}</div>
+                        <div><strong>Email:</strong> {{ object.email }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'quiz_admin:user_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Delete User</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

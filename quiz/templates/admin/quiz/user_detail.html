@@ -1,0 +1,84 @@
+{% extends "admin/quiz/base.html" %}
+
+{% block title %}User Details - {{ user_profile.username }} - Quizemic Admin{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'quiz_admin:user_list' %}">Users</a></li>
+<li class="breadcrumb-item active">{{ user_profile.username }}</li>
+{% endblock %}
+
+{% block page_title %}User Profile: {{ user_profile.username }}{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <!-- User Info Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    {% if user_profile.profile.image %}
+                        <img src="{{ user_profile.profile.image.url }}" alt="Profile Picture" 
+                             class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3"
+                             style="width: 150px; height: 150px;">
+                            <i class="fas fa-user fa-4x text-white"></i>
+                        </div>
+                    {% endif %}
+                    <h4 class="mb-0">{{ user_profile.username }}</h4>
+                    <p class="text-muted">{{ user_profile.email }}</p>
+                </div>
+                
+                <div class="border-top pt-3">
+                    <p><strong>Date Joined:</strong> {{ user_profile.date_joined|date:"F d, Y" }}</p>
+                    <p><strong>Last Login:</strong> {{ user_profile.last_login|date:"F d, Y H:i" }}</p>
+                    <p><strong>Status:</strong> 
+                        {% if user_profile.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Results Card -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quiz Results</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Quiz</th>
+                                <th>Score</th>
+                                <th>Time Taken</th>
+                                <th>Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in quiz_results %}
+                            <tr>
+                                <td>{{ result.quiz.title }}</td>
+                                <td>{{ result.score }}%</td>
+                                <td>{{ result.time_taken }} minutes</td>
+                                <td>{{ result.completed_at|date:"M d, Y H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4">No quiz results found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

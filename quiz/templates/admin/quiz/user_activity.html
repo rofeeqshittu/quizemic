@@ -1,0 +1,83 @@
+{% extends "admin/quiz/base.html" %}
+
+{% block title %}User Activity - {{ user.username }} - Quizemic Admin{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'quiz_admin:user_list' %}">Users</a></li>
+<li class="breadcrumb-item"><a href="{% url 'quiz_admin:user_detail' user.pk %}">{{ user.username }}</a></li>
+<li class="breadcrumb-item active">Activity</li>
+{% endblock %}
+
+{% block page_title %}User Activity: {{ user.username }}{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <!-- Activity Timeline -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for activity in recent_activity %}
+                    <div class="border-start border-2 ps-3 pb-4 position-relative">
+                        <div class="position-absolute" style="left: -8px; top: 0;">
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 16px; height: 16px;">
+                            </div>
+                        </div>
+                        
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Completed Quiz: {{ activity.quiz.title }}</h6>
+                                    <span class="text-muted small">
+                                        {{ activity.completed_at|date:"M d, Y H:i" }}
+                                    </span>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-trophy text-warning me-2"></i>
+                                            <div>
+                                                <div class="small text-muted">Score</div>
+                                                <div class="fw-bold">{{ activity.score }}%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-clock text-info me-2"></i>
+                                            <div>
+                                                <div class="small text-muted">Time Taken</div>
+                                                <div class="fw-bold">{{ activity.time_taken }} minutes</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <div>
+                                                <div class="small text-muted">Questions</div>
+                                                <div class="fw-bold">
+                                    {{ activity.correct_answers }}/{{ activity.total_questions }}
+                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-0">No recent activity found</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

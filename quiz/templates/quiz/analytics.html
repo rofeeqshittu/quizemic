@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analytics Dashboard - Quizemic{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.42.0/apexcharts.min.css">
+<style>
+.stat-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0.5rem 0;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+}
+
+.achievement-card {
+    border-left: 4px solid var(--primary);
+    background: white;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--primary);
+}
+
+.table-responsive {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress {
+    height: 0.5rem;
+    border-radius: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Analytics Dashboard</h1>
+        <div class="btn-group">
+            <button class="btn btn-outline-primary" data-range="7">Week</button>
+            <button class="btn btn-outline-primary" data-range="30">Month</button>
+            <button class="btn btn-outline-primary active" data-range="365">Year</button>
+        </div>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card p-4">
+                <i class="fas fa-pencil-alt fa-2x mb-3 text-primary"></i>
+                <div class="stat-value" id="total-quizzes">-</div>
+                <div class="stat-label">Total Quizzes Taken</div>
+                <div class="progress mt-2">
+                    <div class="progress-bar" role="progressbar" style="width: 75%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card p-4">
+                <i class="fas fa-check-circle fa-2x mb-3 text-success"></i>
+                <div class="stat-value" id="active-quizzes">-</div>
+                <div class="stat-label">Active Quizzes</div>
+                <div class="progress mt-2">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 60%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card p-4">
+                <i class="fas fa-star fa-2x mb-3 text-warning"></i>
+                <div class="stat-value" id="avg-score">-</div>
+                <div class="stat-label">Average Score</div>
+                <div class="progress mt-2">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 85%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card p-4">
+                <i class="fas fa-users fa-2x mb-3 text-info"></i>
+                <div class="stat-value" id="total-users">-</div>
+                <div class="stat-label">Total Users</div>
+                <div class="progress mt-2">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 45%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="chart-container">
+                <h4 class="mb-4">Quiz Performance Trends</h4>
+                <div id="trend-chart"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="chart-container">
+                <h4 class="mb-4">Category Distribution</h4>
+                <div id="category-chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Analysis Tabs -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-pills card-header-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#performance">Performance</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#users">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#categories">Categories</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- Performance Tab -->
+                        <div class="tab-pane fade show active" id="performance">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Quiz</th>
+                                            <th>Attempts</th>
+                                            <th>Avg Score</th>
+                                            <th>Completion Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="performance-table">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Users Tab -->
+                        <div class="tab-pane fade" id="users">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Quizzes Taken</th>
+                                            <th>Avg Score</th>
+                                            <th>Last Active</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Categories Tab -->
+                        <div class="tab-pane fade" id="categories">
+                            <div id="category-performance">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements Section -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Achievements</h5>
+                </div>
+                <div class="card-body" id="achievements-container">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.42.0/apexcharts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
+    let trendChart, categoryChart;
+    
+    // Fetch and update all data
+    function updateDashboard() {
+        Promise.all([
+            fetch('/quiz/analytics/data/'),
+            fetch('/quiz/analytics/achievements/')
+        ])
+        .then(responses => Promise.all(responses.map(r => r.json())))
+        .then(([analyticsData, achievementsData]) => {
+            updateOverviewStats(analyticsData.overview);
+            updateCharts(analyticsData);
+            updateTables(analyticsData);
+            updateAchievements(achievementsData.achievements);
+        });
+    }
+
+    function updateOverviewStats(overview) {
+        document.getElementById('total-quizzes').textContent = overview.total_quizzes_taken;
+        document.getElementById('active-quizzes').textContent = overview.total_active_quizzes;
+        document.getElementById('avg-score').textContent = `${overview.avg_score.toFixed(1)}%`;
+        document.getElementById('total-users').textContent = overview.total_users;
+    }
+
+    function updateCharts(data) {
+        // Trend Chart
+        const trendOptions = {
+            series: [{
+                name: 'Average Score',
+                data: data.trends.map(d => d.avg_score)
+            }, {
+                name: 'Attempts',
+                data: data.trends.map(d => d.attempts)
+            }],
+            chart: {
+                type: 'line',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            xaxis: {
+                categories: data.trends.map(d => d.date)
+            },
+            theme: {
+                mode: 'light'
+            }
+        };
+
+        if (trendChart) {
+            trendChart.updateOptions(trendOptions);
+        } else {
+            trendChart = new ApexCharts(document.querySelector("#trend-chart"), trendOptions);
+            trendChart.render();
+        }
+
+        // Category Chart
+        const categoryOptions = {
+            series: data.category_performance.map(c => c.total_attempts),
+            chart: {
+                type: 'donut',
+                height: 350
+            },
+            labels: data.category_performance.map(c => c.name),
+            theme: {
+                mode: 'light'
+            }
+        };
+
+        if (categoryChart) {
+            categoryChart.updateOptions(categoryOptions);
+        } else {
+            categoryChart = new ApexCharts(document.querySelector("#category-chart"), categoryOptions);
+            categoryChart.render();
+        }
+    }
+
+    function updateTables(data) {
+        // Update Performance Table
+        const performanceTable = document.getElementById('performance-table');
+        performanceTable.innerHTML = data.category_performance.map(cat => `
+            <tr>
+                <td>${cat.name}</td>
+                <td>${cat.total_attempts}</td>
+                <td>${cat.avg_score.toFixed(1)}%</td>
+                <td>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: ${cat.completion_rate}%" 
+                             aria-valuenow="${cat.completion_rate}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            ${cat.completion_rate.toFixed(1)}%
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function updateAchievements(achievements) {
+        const container = document.getElementById('achievements-container');
+        container.innerHTML = achievements.map(achievement => `
+            <div class="achievement-card">
+                <div class="d-flex align-items-center">
+                    <span class="achievement-icon me-3">${achievement.icon}</span>
+                    <div>
+                        <h6 class="mb-1">${achievement.title}</h6>
+                        <p class="mb-0 small text-muted">${achievement.description}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Initial load
+    updateDashboard();
+
+    // Set up refresh interval (every 5 minutes)
+    setInterval(updateDashboard, 300000);
+
+    // Time range buttons
+    document.querySelectorAll('[data-range]').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelectorAll('[data-range]').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            updateDashboard();
+        });
+    });
+});
+</script>
+{% endblock %}
