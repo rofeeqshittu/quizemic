@@ -1,0 +1,190 @@
+{% extends "admin/quiz/base.html" %}
+{% load static %}  <!-- Add this at the top -->
+
+{% block title %}Dashboard - {{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Dashboard</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <!-- Quick Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Total Quizzes</h6>
+                        <h2 class="mb-0">{{ total_quizzes|default:0 }}</h2>
+                    </div>
+                    <div class="text-primary">
+                        <i class="fas fa-question-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Total Users</h6>
+                        <h2 class="mb-0">{{ total_users|default:0 }}</h2>
+                    </div>
+                    <div class="text-success">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Categories</h6>
+                        <h2 class="mb-0">{{ total_categories|default:0 }}</h2>
+                    </div>
+                    <div class="text-warning">
+                        <i class="fas fa-tags fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Today's Attempts</h6>
+                        <h2 class="mb-0" id="todayAttempts">-</h2>
+                    </div>
+                    <div class="text-info">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{% url 'quiz_admin:quiz_create' %}" class="btn btn-admin w-100">
+                                <i class="fas fa-plus me-2"></i>New Quiz
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'quiz_admin:category_create' %}" class="btn btn-admin w-100">
+                                <i class="fas fa-folder-plus me-2"></i>New Category
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'quiz_admin:achievement_create' %}" class="btn btn-admin w-100">
+                                <i class="fas fa-trophy me-2"></i>New Achievement
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'quiz_admin:analytics' %}" class="btn btn-admin w-100">
+                                <i class="fas fa-chart-bar me-2"></i>View Analytics
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quiz Attempts Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="trendChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Category Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity and Top Users -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Quiz</th>
+                                    <th>Score</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in recent_results %}
+                                <tr>
+                                    <td>{{ result.user.username }}</td>
+                                    <td>{{ result.quiz.title }}</td>
+                                    <td>{{ result.score }}%</td>
+                                    <td>{{ result.time_taken }}s</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Top Users</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-table" id="topUsersTable">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Quizzes Taken</th>
+                                    <th>Avg Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Filled via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="{% static 'js/admin/dashboard.js' %}"></script>
+{% endblock %}
