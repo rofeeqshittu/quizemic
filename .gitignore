@@ -12,7 +12,7 @@ db.sqlite3
 media/
 
 # Ignore static files if they are collected (can be regenerated)
-static/
+# static/
 
 # Ignore migrations cache
 **/migrations/*.pyc
