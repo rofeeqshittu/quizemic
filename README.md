@@ -17,8 +17,10 @@ Quizemic is an interactive and engaging quiz platform designed to streamline edu
 - **Media Support**: Upload and manage media files for quizzes.
 - **Responsive Design**: Optimized for desktop and mobile devices.
 
-## Tasks
-| Task Number | File/Directory           | Description                                                                 |
+## Project Demo:- [click here](https://youtu.be/d_pN5j5LSZ8?si=U7H47janGnOAvUYZ)
+
+## Files
+| No | File/Directory           | Description                                                                 |
 |-------------|--------------------------|-----------------------------------------------------------------------------|
 | 1           | `quizemic/`             | Core Django project structure, settings, and URLs.                         |
 | 2           | `quiz/`                 | Quiz app handling logic, models, views, and templates.                     |
@@ -63,6 +65,7 @@ Quizemic is an interactive and engaging quiz platform designed to streamline edu
    python manage.py runserver
    ```
    Access the application at `http://127.0.0.1:8000/`.
+    And admin dashboard (page) at `http://127.0.0.1:8000/quiz-admin`
 
 ### Optional Steps
 - **Create a Superuser** (for admin access):
