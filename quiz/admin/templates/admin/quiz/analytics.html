@@ -1,0 +1,167 @@
+{# quiz/admin/templates/admin/quiz/analytics.html #}
+
+{% extends "admin/quiz/base.html" %}
+{% load static %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Analytics</li>
+{% endblock %}
+
+{% block title %}Analytics - Quizemic Admin{% endblock %}
+
+{% block admin_css %}
+<style>
+    .stats-card {
+        transition: all 0.3s ease;
+        border-radius: 1rem;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .chart-container {
+        height: 300px;
+        margin-bottom: 2rem;
+    }
+    
+    .trend-chart, .category-chart {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .achievement-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block page_title %}Analytics Dashboard{% endblock %}
+
+{% block admin_content %}
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stats-card card bg-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Users</h6>
+                            <h3 class="mb-0" id="totalUsers">-</h3>
+                        </div>
+                        <div class="achievement-badge bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="stats-card card bg-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Quizzes</h6>
+                            <h3 class="mb-0" id="totalQuizzes">-</h3>
+                        </div>
+                        <div class="achievement-badge bg-success bg-opacity-10 text-success">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="stats-card card bg-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Attempts</h6>
+                            <h3 class="mb-0" id="totalAttempts">-</h3>
+                        </div>
+                        <div class="achievement-badge bg-warning bg-opacity-10 text-warning">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="stats-card card bg-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Avg. Score</h6>
+                            <h3 class="mb-0" id="avgScore">-</h3>
+                        </div>
+                        <div class="achievement-badge bg-info bg-opacity-10 text-info">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quiz Attempts Trend</h5>
+                    <div class="chart-container">
+                        <canvas id="trendChart" class="trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Category Performance</h5>
+                    <div class="chart-container">
+                        <canvas id="categoryChart" class="category-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Recent Activity</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Quiz</th>
+                            <th>Score</th>
+                            <th>Time Taken</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentActivityTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block admin_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="{% static 'js/admin/analytics.js' %}"></script>
+{% endblock %}
