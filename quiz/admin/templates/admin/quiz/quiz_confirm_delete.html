@@ -1,0 +1,56 @@
+{% extends "admin/quiz/base.html" %}
+{% load static %}
+{% block title %}Delete Quiz - {{ quiz.title }} - {{ block.super }}{% endblock %}
+{% block admin_content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card form-card">
+                <div class="card-header">
+                    <h3 class="card-title text-danger">Delete Quiz</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p>You are about to delete the quiz "<strong>{{ quiz.title }}</strong>". This action cannot be undone.</p>
+                        <hr>
+                        <p class="mb-0">All associated data will be permanently removed:</p>
+                        <ul class="mt-2">
+                            <li>All questions and answers</li>
+                            <li>All student attempts and scores</li>
+                            <li>All quiz statistics and analytics data</li>
+                        </ul>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'quiz_admin:quiz_list' %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-admin-danger" 
+                                    onclick="return confirm('Are you sure you want to delete this quiz? This action cannot be undone.')">
+                                Delete Quiz
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% if quiz.quizresult_set.exists %}
+<div class="card mt-4">
+    <div class="card-body">
+        <h4 class="text-warning">Quiz Statistics</h4>
+        <p>This quiz has been attempted by students. Here's what will be lost:</p>
+        <ul>
+            <li>Total attempts: {{ total_attempts }}</li>
+            <li>Average score: {{ avg_score|default:0|floatformat:1 }}%</li>
+            {% if last_attempt %}
+                <li>Last attempt: {{ last_attempt.completed_at|date:"F j, Y" }}</li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

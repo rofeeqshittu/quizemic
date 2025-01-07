@@ -1,0 +1,213 @@
+{% extends "admin/quiz/base.html" %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit Quiz{% else %}Create Quiz{% endif %} - {{ block.super }}{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">{% if form.instance.pk %}Edit Quiz{% else %}Create Quiz{% endif %}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="quizForm">
+                        {% csrf_token %}
+                        
+                        <!-- Quiz Details -->
+                        <div class="mb-4">
+                            <h4>Quiz Details</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                                        {{ form.title.errors }}
+                                        <input type="text" name="{{ form.title.name }}" 
+                                               value="{{ form.title.value|default:'' }}"
+                                               class="form-control" id="{{ form.title.id_for_label }}" 
+                                               required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+					    <!--  <label for="{{ form.category.id_for_label }}" class="form-label">Category</label> -->
+					<select name="{{ form.category.name }}" id="{{ form.category.id_for_label }}" class="form-control">
+    <option value="">Select a category</option>
+    {% for choice in form.category.field.queryset %}
+        <option value="{{ choice.pk }}" {% if form.category.value == choice.pk %}selected{% endif %}>
+            {{ choice.name }}
+        </option>
+    {% endfor %}
+</select>
+                                        <!-- {{ form.category.errors }} -->
+                                        <!-- {{ form.category }} -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                        {{ form.description.errors }}
+                                        <textarea name="{{ form.description.name }}" 
+                                                  class="form-control" 
+                                                  id="{{ form.description.id_for_label }}" 
+                                                  rows="3">{{ form.description.value|default:'' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.time_limit.id_for_label }}" class="form-label">Time Limit (minutes)</label>
+                                        {{ form.time_limit.errors }}
+                                        <input type="number" name="{{ form.time_limit.name }}" 
+                                               value="{{ form.time_limit.value|default:'' }}"
+                                               class="form-control" id="{{ form.time_limit.id_for_label }}" 
+                                               min="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="form-check mt-4">
+                                            {{ form.is_active.errors }}
+                                            <input type="checkbox" name="{{ form.is_active.name }}" 
+                                                   class="form-check-input" 
+                                                   id="{{ form.is_active.id_for_label }}"
+                                                   {% if form.is_active.value %}checked{% endif %}>
+                                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                                Active
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Questions Section -->
+                        <div class="mb-4">
+                            <h4>Questions</h4>
+                            <div id="questions-container">
+                                {% if questions %}
+                                    {% for question in questions %}
+                                        <!-- Updated Question Block Structure -->
+                                        <div class="question-block card mb-3">
+                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                <div class="drag-handle cursor-move">
+                                                    <i class="fas fa-grip-vertical"></i>
+                                                </div>
+                                                <div class="question-number">Question #<span class="number">1</span></div>
+                                                <div class="question-actions">
+                                                    <button type="button" class="btn btn-sm btn-info preview-question">
+                                                        <i class="fas fa-eye"></i> Preview
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger remove-question">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <input type="hidden" name="question_id_{{ question.id }}" value="{{ question.id }}">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Question Text</label>
+                                                    <input type="text" name="question_text_{{ question.id }}" 
+                                                           value="{{ question.text }}" class="form-control" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Description (Optional)</label>
+                                                    <textarea name="question_description_{{ question.id }}" 
+                                                              class="form-control">{{ question.description }}</textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Points</label>
+                                                    <input type="number" name="question_points_{{ question.id }}" 
+                                                           value="{{ question.points }}" class="form-control" min="1">
+                                                </div>
+                                                <div class="answers-container">
+                                                    {% for answer in question.answers.all %}
+                                                        <div class="mb-2">
+                                                            <div class="input-group">
+                                                                <div class="input-group-text">
+                                                                    <input type="radio" name="correct_answer_{{ question.id }}" 
+                                                                           value="{{ answer.id }}"
+                                                                           {% if answer.is_correct %}checked{% endif %}>
+                                                                </div>
+                                                                <input type="text" name="answer_text_{{ question.id }}_{{ answer.id }}" 
+                                                                       value="{{ answer.text }}" class="form-control" required>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                                <button type="button" class="btn btn-danger btn-sm remove-question">Remove Question</button>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="add-question">Add Question</button>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'quiz_admin:quiz_list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Quiz</button>
+                        </div>
+                    </form>
+
+                    <!-- Question Preview Modal -->
+                    <div class="modal fade" id="questionPreviewModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Question Preview</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="preview-question-text mb-3"></div>
+                                    <div class="preview-answers"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_js %}
+{{ block.super }}
+<!-- Debug script to verify loading -->
+<script>
+    console.log('Debug script start');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded');
+        // Verify Bootstrap Modal functionality
+        const previewModal = document.getElementById('questionPreviewModal');
+        if (previewModal) {
+            console.log('Preview modal element found');
+            try {
+                const modal = new bootstrap.Modal(previewModal);
+                console.log('Bootstrap modal initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize Bootstrap modal:', error);
+            }
+        } else {
+            console.error('Preview modal element not found');
+        }
+    });
+</script>
+
+<!-- Load Bootstrap JS first -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Load Sortable.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+<!-- Load your custom script last -->
+<script src="{% static 'js/admin/quiz-form.js' %}"></script>
+{% endblock %}
