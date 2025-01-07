@@ -1,0 +1,104 @@
+{% extends "admin/quiz/base.html" %}
+{% block breadcrumb %}
+    <li class="breadcrumb-item active">Settings</li>
+{% endblock %}
+{% block page_title %}Settings{% endblock %}
+{% block admin_content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Quiz Settings</h5>
+        
+        <form method="post" class="settings-form">
+            {% csrf_token %}
+            
+            <!-- General Settings Section -->
+            <section class="mb-4">
+                <h6 class="mb-3">General Settings</h6>
+                
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.default_time_limit.id_for_label }}">
+                        Default Quiz Time Limit (minutes)
+                    </label>
+                    {{ form.default_time_limit }}
+                    {% if form.default_time_limit.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.default_time_limit.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.points_per_question.id_for_label }}">
+                        Points per Question
+                    </label>
+                    {{ form.points_per_question }}
+                    {% if form.points_per_question.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.points_per_question.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.minimum_pass_score.id_for_label }}">
+                        Minimum Pass Score (%)
+                    </label>
+                    {{ form.minimum_pass_score }}
+                    {% if form.minimum_pass_score.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.minimum_pass_score.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label" for="{{ form.max_attempts_per_quiz.id_for_label }}">
+                        Maximum Attempts per Quiz
+                    </label>
+                    {{ form.max_attempts_per_quiz }}
+                    {% if form.max_attempts_per_quiz.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.max_attempts_per_quiz.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3 form-check">
+                    {{ form.show_correct_answers }}
+                    <label class="form-check-label" for="{{ form.show_correct_answers.id_for_label }}">
+                        Show Correct Answers After Quiz
+                    </label>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    {{ form.enable_leaderboard }}
+                    <label class="form-check-label" for="{{ form.enable_leaderboard.id_for_label }}">
+                        Enable Leaderboard
+                    </label>
+                </div>
+            </section>
+            
+            <!-- Email Settings Section -->
+            <section class="mb-4">
+                <h6 class="mb-3">Email Settings</h6>
+                
+                <div class="mb-3 form-check">
+                    {{ form.notify_new_quiz }}
+                    <label class="form-check-label" for="{{ form.notify_new_quiz.id_for_label }}">
+                        Notify users when new quizzes are available
+                    </label>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    {{ form.notify_results }}
+                    <label class="form-check-label" for="{{ form.notify_results.id_for_label }}">
+                        Send quiz results via email
+                    </label>
+                </div>
+            </section>
+            
+            <button type="submit" class="btn btn-primary">Save All Settings</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
