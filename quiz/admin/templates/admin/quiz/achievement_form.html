@@ -1,0 +1,145 @@
+{% extends "admin/quiz/base.html" %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Achievement - {{ block.super }}{% endblock %}
+
+{% block page_title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Achievement{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'quiz_admin:achievement_list' %}">Achievements</a></li>
+<li class="breadcrumb-item active">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Achievement</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            {% if not form.instance.pk and available_achievements %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Available Achievement Keys</h5>
+                    <p class="card-text small text-muted mb-0">Click an achievement to auto-fill the form</p>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for key, data in available_achievements.items %}
+                        <div class="col-12">
+                            <div class="achievement-option card h-100 cursor-pointer"
+                                 style="cursor: pointer;"
+                                 data-key="{{ key }}"
+                                 data-title="{{ data.title }}"
+                                 data-description="{{ data.description }}"
+                                 data-icon="{{ data.icon }}">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="fs-4 me-2">{{ data.icon }}</span>
+                                        <h6 class="card-title mb-0">{{ data.title }}</h6>
+                                    </div>
+                                    <p class="card-text small mb-1">{{ data.description }}</p>
+                                    <p class="card-text small text-muted">Key: {{ key }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {{ field.label }}
+                            </label>
+                            <div class="{% if field.name == 'icon' %}input-group{% endif %}">
+                                <input type="text" 
+                                       name="{{ field.name }}" 
+                                       id="{{ field.id_for_label }}"
+                                       class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                       value="{{ field.value|default:'' }}"
+                                       {% if field.name == 'key' and form.instance.pk %}readonly{% endif %}>
+                                {% if field.name == 'icon' %}
+                                <span class="input-group-text">
+                                    <span class="preview-icon">{{ field.value }}</span>
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {{ field.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                            {% if field.help_text %}
+                            <div class="form-text">
+                                {{ field.help_text }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'quiz_admin:achievement_list' %}" 
+                               class="btn btn-secondary">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-admin">
+                                {% if form.instance.pk %}Update{% else %}Create{% endif %} Achievement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block admin_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-fill form when clicking an achievement option
+    const achievementOptions = document.querySelectorAll('.achievement-option');
+    achievementOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            document.getElementById('id_key').value = this.dataset.key;
+            document.getElementById('id_title').value = this.dataset.title;
+            document.getElementById('id_description').value = this.dataset.description;
+            document.getElementById('id_icon').value = this.dataset.icon;
+            updateIconPreview();
+        });
+    });
+
+    // Update icon preview when typing
+    const iconInput = document.getElementById('id_icon');
+    if (iconInput) {
+        iconInput.addEventListener('input', updateIconPreview);
+        updateIconPreview(); // Initial preview
+    }
+
+    function updateIconPreview() {
+        const previewIcon = document.querySelector('.preview-icon');
+        if (previewIcon) {
+            previewIcon.className = iconInput.value;
+        }
+    }
+
+    // Add hover effect to achievement options
+    document.querySelectorAll('.achievement-option').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.classList.add('shadow-sm');
+            this.style.transform = 'translateY(-2px)';
+            this.style.transition = 'all 0.3s ease';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.classList.remove('shadow-sm');
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

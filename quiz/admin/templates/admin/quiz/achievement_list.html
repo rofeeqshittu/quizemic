@@ -1,0 +1,124 @@
+{% extends "admin/quiz/base.html" %}
+{% load static %}
+
+{% block page_title %}Achievements{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Achievements</h1>
+        <a href="{% url 'quiz_admin:achievement_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Achievement
+        </a>
+    </div>
+
+    <!-- Search Box -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="get" class="d-flex">
+                <input type="text" name="search" value="{{ request.GET.search }}" 
+                       class="form-control me-2" placeholder="Search achievements...">
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Available Achievement Types -->
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-primary">Available Achievement Types</h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                {% for achievement in tracker_achievements %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 border">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="fs-4 me-2">{{ achievement.data.icon }}</span>
+                                <h5 class="card-title mb-0">{{ achievement.data.title }}</h5>
+                            </div>
+                            <p class="card-text small text-muted">{{ achievement.data.description }}</p>
+                            <p class="card-text"><small class="text-muted">Key: {{ achievement.key }}</small></p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Configured Achievements -->
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-primary">Configured Achievements</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Icon</th>
+                            <th class="text-center">Times Earned</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for achievement in achievements %}
+                        <tr>
+                            <td>{{ achievement.key }}</td>
+                            <td>{{ achievement.title }}</td>
+                            <td>{{ achievement.description|truncatewords:20 }}</td>
+                            <td><span class="fs-5">{{ achievement.icon }}</span></td>
+                            <td class="text-center">{{ achievement.earned_count_annotation|default:"0" }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'quiz_admin:achievement_update' achievement.pk %}" 
+                                   class="btn btn-sm btn-primary me-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'quiz_admin:achievement_delete' achievement.pk %}" 
+                                   class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No achievements configured yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if is_paginated %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
