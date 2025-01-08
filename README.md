@@ -8,7 +8,7 @@ Quizemic is an interactive and engaging quiz platform designed to streamline edu
 1. **Interactivity**: Engaging user experience through quizzes, scoring, and feedback.
 2. **Scalability**: Designed to handle increasing user loads and extensible quiz modules.
 3. **Security**: User authentication and secure data management.
-4. **Customization**: Dynamic quiz creation with multimedia support.
+4. **Customization**: Dynamic quiz creation with multimedia support (SOON).
 
 ## Features
 - **User Management**: Role-based access control and user authentication.
