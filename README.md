@@ -8,16 +8,17 @@ Quizemic is an interactive and engaging quiz platform designed to streamline edu
 1. **Interactivity**: Engaging user experience through quizzes, scoring, and feedback.
 2. **Scalability**: Designed to handle increasing user loads and extensible quiz modules.
 3. **Security**: User authentication and secure data management.
-4. **Customization**: Dynamic quiz creation with multimedia support (SOON).
+4. **Customization**: Dynamic quiz creation with multimedia support.
 
 ## Features
 - **User Management**: Role-based access control and user authentication.
 - **Quiz Management**: Create, read, update, delete (CRUD) quizzes.
 - **Analytics**: View user performance and system statistics.
-- **Media Support**: Upload and manage media files for quizzes.
+- **Media Support**: Upload and manage media files for quizzes (SOON).
 - **Responsive Design**: Optimized for desktop and mobile devices.
 
 ### Project Demo:- [click here](https://youtu.be/d_pN5j5LSZ8?si=U7H47janGnOAvUYZ)
+### Presentation Slides:- [Click here](https://docs.google.com/presentation/d/1n7sqSt4eepdwgImdVqx6g3tk2c82JMM2b3xAX6b1Wvo/edit?usp=sharing) for Google slides
 
 ## Files
 | No | File/Directory           | Description                                                                 |
@@ -84,6 +85,6 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
 ---
-Enjoy using Quizemic! 🎉
+*Enjoy using Quizemic! 🎉*
 
 
