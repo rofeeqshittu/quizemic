@@ -18,7 +18,7 @@ Quizemic is an interactive and engaging quiz platform designed to streamline edu
 - **Responsive Design**: Optimized for desktop and mobile devices.
 
 ### Project Demo:- [click here](https://youtu.be/d_pN5j5LSZ8?si=U7H47janGnOAvUYZ)
-### Presentation Slides:- [Click here](https://docs.google.com/presentation/d/1n7sqSt4eepdwgImdVqx6g3tk2c82JMM2b3xAX6b1Wvo/edit?usp=sharing) for Google slides
+### Presentation Slides:- [click here](https://docs.google.com/presentation/d/1n7sqSt4eepdwgImdVqx6g3tk2c82JMM2b3xAX6b1Wvo/edit?usp=sharing) for Google slides
 
 ## Files
 | No | File/Directory           | Description                                                                 |
